@@ -77,28 +77,4 @@ class CarWashRepositoryImpl(private val database: MongoDatabase, private val loc
         return localData
     }
 
-
-
-
-
-
-    private suspend fun List<CarWashShortResponse>.executeFilters(params: Parameters): List<CarWashShortResponse> {
-        val search = params["search"]
-
-        val status = params["status"]
-        val limit = params["limit"]
-        val offset = params["offset"]
-
-        return withContext(Dispatchers.IO) {
-            this@executeFilters
-                .let { list ->
-                    //search filter
-                    if (search.isNullOrEmpty()) list
-                    else list.filter { it.name.hasText(search) || it.address.street.hasText(search) }
-                }
-                .let { if (!status.isNullOrEmpty()) it.filter { it.name.contains(status) } else it }
-        }
-    }
-
-
 }
