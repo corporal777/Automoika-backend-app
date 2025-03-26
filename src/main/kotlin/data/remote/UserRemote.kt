@@ -14,7 +14,6 @@ data class UserRemote(
     @BsonId
     val id: String,
     val name: String,
-    val lastName: String,
     val createdAt: String,
     val image: CarWashImageModel,
     val login : UserLoginModel,
@@ -22,24 +21,7 @@ data class UserRemote(
     val account : UserAccountModel,
     val state : UserStateModel
 ) {
-    fun toResponse() : UserResponse = UserResponse(id, name, lastName, image, login, account)
-
-    companion object {
-        fun createFromCarWash(body: CarWashBody): UserRemote {
-            return UserRemote(
-                id = body.id,
-                name = body.name,
-                lastName = "Автомойка",
-                createdAt = System.currentTimeMillis().toString(),
-                image = body.backgroundImage ?: CarWashImageModel("",""),
-                login = UserLoginModel(body.login, true),
-                password = UserPasswordModel(body.password, false),
-                account = UserAccountModel(TYPE_CAR_WASH_OWNER, listOf(body.id)),
-                state = UserStateModel("", false)
-            )
-        }
-    }
-
+    fun toResponse() : UserResponse = UserResponse(id, name, image, login, account)
 }
 
 @Serializable
@@ -56,8 +38,8 @@ data class UserPasswordModel(
 
 @Serializable
 data class UserAccountModel(
-    val type : String,
-    val carWash : List<String>,
+    var type : String,
+    var carWash : List<String>,
 )
 
 @Serializable

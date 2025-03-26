@@ -14,7 +14,6 @@ data class UserGoogleBody(
         return UserRemote(
             id = id,
             name = name,
-            lastName = lastName ?: "",
             createdAt = System.currentTimeMillis().toString(),
             image = CarWashImageModel("",""),
             login = UserLoginModel("-", false),

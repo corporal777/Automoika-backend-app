@@ -9,7 +9,6 @@ import kg.automoika.data.response.UserResponse
 
 interface UserRepository {
 
-    suspend fun createGoogleUser(body : UserGoogleBody) : UserResponse?
     suspend fun createUser(body : UserBody) : UserResponse?
     suspend fun sendReview(body : ReviewBody) : ReviewSenderModel?
     suspend fun getCarWashReviews(id : String?) : List<ReviewResponse>

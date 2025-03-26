@@ -1,4 +1,4 @@
-package kg.automoika.extensions
+package kg.automoika.utils
 
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging

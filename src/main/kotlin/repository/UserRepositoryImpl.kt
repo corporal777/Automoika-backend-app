@@ -22,12 +22,6 @@ class UserRepositoryImpl(private val database: MongoDatabase) : UserRepository {
     private val usersCollection get() = database.getCollection<UserRemote>(USERS_COLLECTION)
     private val reviewCollection get() = database.getCollection<ReviewRemote>(REVIEW_COLLECTION)
 
-    override suspend fun createGoogleUser(body: UserGoogleBody): UserResponse? {
-        val remote = body.createRemote()
-        val result = usersCollection.insertOne(remote)
-        return if (result.wasAcknowledged()) remote.toResponse() else null
-    }
-
     override suspend fun createUser(body: UserBody): UserResponse? {
         val remote = body.createRemote()
         val result = usersCollection.insertOne(remote)
@@ -59,7 +53,7 @@ class UserRepositoryImpl(private val database: MongoDatabase) : UserRepository {
 
         return remoteData?.users?.map {
             val user = users.firstOrNull { x -> x.id == it.userId }
-            ReviewResponse(user?.name, user?.lastName, user?.image?.imageUrl, it.text)
+            ReviewResponse(user?.name, user?.image?.imageUrl, it.text)
         } ?: emptyList()
     }
 }

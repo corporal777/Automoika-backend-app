@@ -2,10 +2,9 @@ package kg.automoika.data.body
 
 import io.ktor.http.content.*
 import kg.automoika.data.remote.*
-import kg.automoika.extensions.FileUtils.uploadImageToFirebase
 
 data class CarWashBody(
-    val id : String,
+    val id: String,
     var name: String = "",
     var description: String = "",
 
@@ -14,22 +13,19 @@ data class CarWashBody(
     var district: String = "",
     var lat: String = "",
     var lon: String = "",
-    var wayDescription : String = "",
+    var wayDescription: String = "",
 
     var backgroundImage: CarWashImageModel? = null,
     var boxesCount: String = "0",
 
-    var userId : String? = null,
-    var login : String = "",
-    var password : String = "",
+    var userId: String = "",
 
-    var phone : String = "",
-    var whatsapp : String = "",
-    var instagram : String = "",
+    var phone: String = "",
+    var whatsapp: String = "",
+    var instagram: String = "",
 
-
-    var type : String = ""
-    ) {
+    var type: String = ""
+) {
     companion object {
         fun CarWashBody.setData(partData: PartData.FormItem) {
             when (partData.name) {
@@ -45,19 +41,17 @@ data class CarWashBody(
 
                 "boxes" -> boxesCount = partData.value
 
-                "user" -> userId = partData.value
-                "login" -> login = partData.value
-                "password" -> password = partData.value
-
                 "phone" -> phone = partData.value
                 "whatsapp" -> whatsapp = partData.value
                 "instagram" -> instagram = partData.value
 
                 "type" -> type = partData.value
+
+                "user" -> userId = partData.value
             }
         }
 
-        fun CarWashBody.setBackgroundImage(fileName: String, fileUrl : String) {
+        fun CarWashBody.setBackgroundImage(fileName: String, fileUrl: String) {
             backgroundImage = CarWashImageModel(fileName, fileUrl)
         }
     }
@@ -84,7 +78,7 @@ data class CarWashBody(
 
             favourites = listOf(""),
             type = type,
-            owner = userId ?: id
+            owner = userId
         )
     }
 }

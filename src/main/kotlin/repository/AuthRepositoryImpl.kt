@@ -14,8 +14,7 @@ import kg.automoika.data.response.ErrorResponse
 import kg.automoika.data.response.TokenResponse
 import kg.automoika.data.response.UserResponse
 import kg.automoika.db.AuthDatabase
-import kg.automoika.extensions.ACCOUNTS_COLLECTION
-import kg.automoika.extensions.NotificationUtils
+import kg.automoika.utils.NotificationUtils
 import kg.automoika.extensions.USERS_COLLECTION
 import kg.automoika.extensions.daysBetween
 import kotlinx.coroutines.flow.firstOrNull

@@ -1,12 +1,14 @@
-package kg.automoika.extensions
+package kg.automoika.utils
 
 import com.google.firebase.cloud.StorageClient
-import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import kg.automoika.data.response.FBImageModel
+import kg.automoika.extensions.createHttpClient
+import kg.automoika.extensions.generateShortId
+import kg.automoika.extensions.submitFormWithBinaryData
 import java.io.File
 
 object FileUtils {

@@ -15,7 +15,7 @@ import kg.automoika.data.body.CarWashFreeBoxesBody
 import kg.automoika.data.remote.CarWashImageModel
 import kg.automoika.data.response.CarWashShortResponse
 import kg.automoika.data.response.DataResponse
-import kg.automoika.extensions.FileUtils.uploadImageToFirebase
+import kg.automoika.utils.FileUtils.uploadImageToFirebase
 import kg.automoika.extensions.generateId
 import kg.automoika.extensions.generateShortId
 import kg.automoika.repository.AuthRepository
@@ -30,13 +30,11 @@ fun Route.carWashRoutes() {
     get("v1/car-wash-detail/{id}") {
         if (!auth.checkAuth(call)) return@get
 
-        val id = call.parameters["id"]
-        if (id.isNullOrEmpty()) call.respond(HttpStatusCode.BadRequest)
-        else {
-            val carWashDetail = repository.getCarWashById(id)
-            if (carWashDetail != null) call.respond(carWashDetail)
-            else call.respond(HttpStatusCode.NotFound)
-        }
+        val params = call.request.queryParameters
+        val id = call.parameters["id"] ?: return@get call.respond(HttpStatusCode.BadRequest)
+        val response = repository.getCarWashById(id, params)
+        if (response != null) call.respond(response)
+        else call.respond(HttpStatusCode.NotFound)
     }
 
     get("v1/car-wash-list") {
@@ -75,28 +73,6 @@ fun Route.carWashRoutes() {
         }
     }
 
-
-
-    post("v1/upload-point-images") {
-//        val client = createHttpClient()
-//        val imagesList = arrayListOf<String>()
-//        var count = 0
-//        call.receiveMultipart().forEachPart { part ->
-//            if (part is PartData.FileItem) {
-//                call.application.environment.log.error(part.originalFileName)
-//                val fileBytes = part.streamProvider().readBytes()
-//                imagesList.add(uploadImageToFirebase(client, fileBytes, part.originalFileName ?: "image.jpeg", count))
-//                count++
-//            }
-//            part.dispose()
-//        }
-//        client.close()
-//
-//
-//        if (imagesList.isEmpty()) {
-//            call.respond(HttpStatusCode.BadRequest, "Image Not Uploaded")
-//        } else call.respond(HttpStatusCode.OK)
-    }
 
     post("v1/send-free-boxes") {
         if (!auth.checkAuth(call)) return@post

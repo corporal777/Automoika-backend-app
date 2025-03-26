@@ -19,6 +19,7 @@ import kg.automoika.extensions.createHttpClient
 import kg.automoika.extensions.distanceInKm
 import kg.automoika.repository.AuthRepository
 import kg.automoika.repository.CarWashRepository
+import kg.automoika.utils.LocationUtils
 import org.koin.ktor.ext.inject
 import java.awt.Window
 
@@ -29,29 +30,11 @@ fun Route.locationRoutes() {
     post("v1/check-user-location") {
         if (!auth.checkAuth(call)) return@post
 
-        val location = call.receiveNullable<LocationRequest>() ?: kotlin.run {
-            call.respond(HttpStatusCode.BadRequest, "Body cannot be null!")
-            return@post
-        }
-        val response = call.getLocationFromResource(location)
+        val location = call.receive<LocationRequest>()
+        val response = LocationUtils.getLocationFromResource(location, call)
         if (response != null) call.respond(response)
         else call.respond(HttpStatusCode.NotFound, "Location not found")
     }
 }
 
 
-private fun ApplicationCall.getLocationFromResource(request: LocationRequest) : LocationResponse? {
-    val fileContent = this::class.java.classLoader.getResource("kg-cities.json")?.readText()
-    val citiesList =  Gson().fromJson(fileContent, LocationDataResponse::class.java).data
-
-    val city = citiesList.find { x ->
-        distanceInKm(
-            x.lat.toDouble(),
-            x.lon.toDouble(),
-            request.lat.toDouble(),
-            request.lon.toDouble()
-        ) <= 30
-    }
-
-    return city
-}

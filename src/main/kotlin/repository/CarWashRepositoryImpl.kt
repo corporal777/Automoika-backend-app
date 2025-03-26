@@ -1,6 +1,5 @@
 package kg.automoika.repository
 
-import com.mongodb.MongoException
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
@@ -8,9 +7,13 @@ import io.ktor.http.*
 import kg.automoika.data.body.CarWashBody
 import kg.automoika.data.body.CarWashFreeBoxesBody
 import kg.automoika.data.remote.*
+import kg.automoika.data.response.CarWashFullResponse
 import kg.automoika.data.response.CarWashShortResponse
 import kg.automoika.db.CarWashDatabase
 import kg.automoika.extensions.*
+import kg.automoika.utils.CarWashUtils
+import kg.automoika.utils.findCWById
+import kg.automoika.utils.findUserById
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
@@ -20,25 +23,28 @@ class CarWashRepositoryImpl(private val database: MongoDatabase, private val loc
 
     private val carWashCollection get() = database.getCollection<CarWashRemote>(CAR_WASH_COLLECTION)
     private val usersCollection get() = database.getCollection<UserRemote>(USERS_COLLECTION)
+    private val reviewsCollection get() = database.getCollection<ReviewRemote>(REVIEW_COLLECTION)
 
 
     override suspend fun createCarWashPoint(model: CarWashBody, imagesList: List<CarWashImageModel>): CarWashRemote? {
-        if (model.userId.isNullOrEmpty()){
-            val remote = UserRemote.createFromCarWash(model)
-            usersCollection.insertOne(remote)
-        } else {
-            val account = UserAccountModel(TYPE_CAR_WASH_OWNER, listOf(model.id))
+        val remoteData = model.createRemote(imagesList)
+        val user = usersCollection.findUserById(model.userId).firstOrNull()
+        if (user != null){
+            val list = mutableListOf<String>().apply {
+                add(remoteData.id)
+                addAll(user.account.carWash)
+            }
+            val account = UserAccountModel(TYPE_CAR_WASH_OWNER, list)
             val updates = Updates.set(UserRemote::account.name, account)
             val query = Filters.eq("_id", model.userId)
             usersCollection.updateOne(query, updates)
         }
-        val remoteData = model.createRemote(imagesList)
-
-        val resultLocal = localDatabase.addCarWashPoint(remoteData)
-        if (!resultLocal) return null
 
         val result = carWashCollection.insertOne(remoteData)
-        return if (result.wasAcknowledged()) remoteData else null
+        if (result.wasAcknowledged()) {
+            localDatabase.addCarWashPoint(remoteData)
+            return remoteData
+        } else return null
     }
 
 
@@ -46,11 +52,21 @@ class CarWashRepositoryImpl(private val database: MongoDatabase, private val loc
         return localDatabase.updateCarWashBoxes(model)
     }
 
-    override suspend fun getCarWashById(id: String): CarWashRemote? {
+    override suspend fun getCarWashById(id: String, params: Parameters): CarWashFullResponse? {
+        val remote = carWashCollection.findCWById(id).firstOrNull() ?: return null
         val local = localDatabase.getCarWashById(id)
-        val remoteData = carWashCollection.find(Filters.eq("_id", id)).firstOrNull()
-        if (local?.boxes != null) remoteData?.boxes = local.boxes
-        return remoteData
+        if (local?.boxes != null) remote.boxes = local.boxes
+
+        val response = CarWashFullResponse.fromRemote(remote)
+
+        val reviewShortParams = params["reviewShort"]
+        if (!reviewShortParams.isNullOrEmpty()){
+            val users = usersCollection.find().toList()
+            val reviews = reviewsCollection.find(Filters.eq("_id", id)).firstOrNull()
+            response.binds.review = CarWashUtils.getShortReviews(reviews, users)
+        }
+
+        return response
     }
 
     override suspend fun getCarWashList(params: Parameters): List<CarWashShortResponse> {
