@@ -17,12 +17,12 @@ fun main(args: Array<String>): Unit {
 
 fun Application.module() {
     install(ContentNegotiation) {
-        //gson {}
-        json(Json {
-            prettyPrint = true
-            isLenient = true
-            ignoreUnknownKeys = true
-        })
+        gson {}
+//        json(Json {
+//            prettyPrint = true
+//            isLenient = true
+//            ignoreUnknownKeys = true
+//        })
     }
     install(Koin) {
         modules(mongoModule(getMongoUri(), getMongoDb()), dataBaseModule, repositoryModule)

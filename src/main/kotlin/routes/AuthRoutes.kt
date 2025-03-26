@@ -39,6 +39,7 @@ fun Route.authRoutes() {
         if (!repository.checkAuth(call)) return@post
         val request = call.receive<PhoneBody>()
         val userId = repository.checkPhoneExists(request.phone)
+        println(userId)
         call.respond(userId ?: "-1")
     }
 

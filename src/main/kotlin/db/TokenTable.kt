@@ -6,8 +6,8 @@ import org.jetbrains.exposed.sql.Table
 
 object TokenTable : Table() {
     val id = integer("id").autoIncrement()
-    val token = varchar("token", 255)
-    val createdAt = varchar("createdAt", 255)
+    val token = varchar("token", 50)
+    val createdAt = varchar("createdAt", 20)
 
     override val primaryKey: PrimaryKey = PrimaryKey(id)
 

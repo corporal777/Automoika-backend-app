@@ -7,8 +7,8 @@ import org.jetbrains.exposed.sql.Table
 
 object CodesTable : Table() {
     val id = integer("id").autoIncrement()
-    val phone = varchar("phone", 255)
-    val code = varchar("code", 255)
+    val phone = varchar("phone", 20)
+    val code = varchar("code", 20)
 
     override val primaryKey: PrimaryKey = PrimaryKey(id)
 

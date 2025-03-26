@@ -15,4 +15,9 @@ fun Route.databaseRoutes() {
         if (list.isEmpty()) call.respond(HttpStatusCode.Forbidden)
         else call.respond(HttpStatusCode.OK, list)
     }
+
+    get("v1/check-data") {
+        val data = repository.checkData()
+        call.respond(data)
+    }
 }

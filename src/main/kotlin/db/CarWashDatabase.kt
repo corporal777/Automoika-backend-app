@@ -1,5 +1,6 @@
 package kg.automoika.db
 
+import io.ktor.http.*
 import kg.automoika.data.body.CarWashFreeBoxesBody
 import kg.automoika.data.remote.CarWashBoxesModel
 import kg.automoika.data.remote.CarWashRemote
@@ -8,6 +9,9 @@ import kg.automoika.data.response.CarWashShortResponse
 import kg.automoika.extensions.suspendTransaction
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.neq
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
 object CarWashDatabase {
@@ -63,10 +67,12 @@ object CarWashDatabase {
         }.map { resultRowToCarWashResponse(it) }
     }
 
+
     suspend fun getCarWashById(id : String) = suspendTransaction {
         val local = CarWashTable.select { CarWashTable.id eq id.toInt() }.firstOrNull()
         if (local == null) null else resultRowToCarWashResponse(local)
     }
+
 
     suspend fun getCarWashListLocal() = suspendTransaction {
         try {
@@ -74,6 +80,27 @@ object CarWashDatabase {
         } catch (e: Exception) {
             emptyList()
         }
+    }
+
+    suspend fun searchCarWashData(params : Parameters) = suspendTransaction {
+        val search = params["search"]
+        val boxes = params["boxes"]
+        val limit = params["limit"]?.toInt() ?: 30
+        val offset = params["offset"]?.toLong() ?: 0
+
+        val filters = arrayListOf<Op<Boolean>>().apply {
+            if (!search.isNullOrEmpty()){
+                add(CarWashTable.name eq search or (CarWashTable.street like "%${search}%"))
+            }
+            if (boxes.toBoolean()){
+                add(CarWashTable.freeBoxes neq "0")
+            }
+        }
+
+        CarWashTable.select {
+            if (filters.isEmpty()) CarWashTable.id neq -1
+            else filters.compoundAnd()
+        }.limit(limit, offset).map { resultRowToCarWashResponse(it) }
     }
 
 

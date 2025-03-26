@@ -10,6 +10,7 @@ val repositoryModule = module {
     single<CarWashRepository> { CarWashRepositoryImpl(get(), get()) }
     single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
     single<UserRepository> { UserRepositoryImpl(get()) }
+    single<CommonRepository> { CommonRepositoryImpl(get(), get()) }
 }
 
 val dataBaseModule = module {

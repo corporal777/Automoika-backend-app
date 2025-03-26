@@ -35,6 +35,15 @@ fun Route.locationRoutes() {
         if (response != null) call.respond(response)
         else call.respond(HttpStatusCode.NotFound, "Location not found")
     }
+
+    post("v1/location-info") {
+        if (!auth.checkAuth(call)) return@post
+
+        val location = call.receive<LocationRequest>()
+        val response = LocationUtils.getLocationFromYandex(location, call)
+        if (response != null) call.respond(response)
+        else call.respond(HttpStatusCode.NotFound, "Location not found")
+    }
 }
 
 

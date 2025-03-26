@@ -22,4 +22,12 @@ class CommonRepositoryImpl(private val remoteDb: MongoDatabase, private val loca
             return localDb.addCarWashPoints(remoteData)
         } else return localData
     }
+
+    override suspend fun checkData(): String {
+        val localData = localDb.getCarWashListLocal()
+        val remoteData = carWashCollection.find().toList()
+        val localDataSize = "Local DB:" + localData.size.toString()
+        val remoteDataSize = "Remote DB:" + remoteData.size.toString()
+        return localDataSize + "\n" + remoteDataSize
+    }
 }

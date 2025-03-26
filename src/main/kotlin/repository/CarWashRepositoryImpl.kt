@@ -70,9 +70,11 @@ class CarWashRepositoryImpl(private val database: MongoDatabase, private val loc
     }
 
     override suspend fun getCarWashList(params: Parameters): List<CarWashShortResponse> {
-        val localData = localDatabase.getCarWashListLocal()
-        return if (localData.isNotEmpty()) localData.executeFilters(params)
-        else carWashCollection.find().toList().map { CarWashShortResponse.fromRemote(it) }.executeFilters(params)
+        //val localData = localDatabase.getCarWashListLocal()
+        //return if (localData.isNotEmpty()) localData.executeFilters(params)
+        //else carWashCollection.find().toList().map { CarWashShortResponse.fromRemote(it) }.executeFilters(params)
+        val localData = localDatabase.searchCarWashData(params)
+        return localData
     }
 
 
