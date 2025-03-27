@@ -18,10 +18,9 @@ data class UserRemote(
     val image: CarWashImageModel,
     val login : UserLoginModel,
     val password : UserPasswordModel,
-    val account : UserAccountModel,
     val state : UserStateModel
 ) {
-    fun toResponse() : UserResponse = UserResponse(id, name, image, login, account)
+    fun toResponse() : UserResponse = UserResponse(id, name, createdAt, image, login)
 }
 
 @Serializable

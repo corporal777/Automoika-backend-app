@@ -3,7 +3,6 @@ package kg.automoika.data.response
 import kg.automoika.data.remote.CarWashBoxesModel
 import kg.automoika.data.remote.CarWashLocationModel
 import kg.automoika.data.remote.CarWashRemote
-import kg.automoika.data.remote.UserRemote
 import kotlinx.serialization.Serializable
 
 @Serializable

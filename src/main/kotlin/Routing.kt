@@ -40,6 +40,7 @@ fun Application.configureRouting() {
         locationRoutes()
         socketRoutes()
         userRoutes()
+        accountRoutes()
         configureStaticFolders()
     }
 }

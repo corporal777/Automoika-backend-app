@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class UserResponse(
     val id: String,
     val name: String,
+    val createdAt : String,
     val image: CarWashImageModel,
     val login : UserLoginModel,
-    val account : UserAccountModel,
 )

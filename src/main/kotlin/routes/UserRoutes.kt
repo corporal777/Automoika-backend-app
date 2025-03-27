@@ -15,6 +15,14 @@ fun Route.userRoutes() {
     val repository by inject<UserRepository>()
     val auth by inject<AuthRepository>()
 
+    post("v1/login-user"){
+        if (!auth.checkAuth(call)) return@post
+
+        val request = call.receive<LoginBody>()
+        val response = repository.loginUser(request, call) ?: return@post
+        call.respond(response)
+    }
+
     post("v1/create-user") {
         if (!auth.checkAuth(call)) return@post
 

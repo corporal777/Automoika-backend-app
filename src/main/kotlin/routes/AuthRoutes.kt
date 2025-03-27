@@ -27,13 +27,6 @@ fun Route.authRoutes() {
         else call.respond(HttpStatusCode.Forbidden)
     }
 
-    post("v1/login"){
-        if (!repository.checkAuth(call)) return@post
-
-        val request = call.receive<LoginBody>()
-        val response = repository.login(request, call) ?: return@post
-        call.respond(response)
-    }
 
     post("v1/check-phone-exists"){
         if (!repository.checkAuth(call)) return@post

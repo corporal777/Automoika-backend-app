@@ -11,9 +11,7 @@ import kg.automoika.data.response.CarWashFullResponse
 import kg.automoika.data.response.CarWashShortResponse
 import kg.automoika.db.CarWashDatabase
 import kg.automoika.extensions.*
-import kg.automoika.utils.CarWashUtils
-import kg.automoika.utils.findCWById
-import kg.automoika.utils.findUserById
+import kg.automoika.utils.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
@@ -24,21 +22,14 @@ class CarWashRepositoryImpl(private val database: MongoDatabase, private val loc
     private val carWashCollection get() = database.getCollection<CarWashRemote>(CAR_WASH_COLLECTION)
     private val usersCollection get() = database.getCollection<UserRemote>(USERS_COLLECTION)
     private val reviewsCollection get() = database.getCollection<ReviewRemote>(REVIEW_COLLECTION)
-
+    private val accCollection get() = database.getCollection<AccountRemote>(ACCOUNTS_COLLECTION)
 
     override suspend fun createCarWashPoint(model: CarWashBody, imagesList: List<CarWashImageModel>): CarWashRemote? {
         val remoteData = model.createRemote(imagesList)
-        val user = usersCollection.findUserById(model.userId).firstOrNull()
-        if (user != null){
-            val list = mutableListOf<String>().apply {
-                add(remoteData.id)
-                addAll(user.account.carWash)
-            }
-            val account = UserAccountModel(TYPE_CAR_WASH_OWNER, list)
-            val updates = Updates.set(UserRemote::account.name, account)
-            val query = Filters.eq("_id", model.userId)
-            usersCollection.updateOne(query, updates)
-        }
+        val account = accCollection.findAccById(model.userId).firstOrNull() ?: return null
+        val list = mutableListOf(remoteData.id).apply { addAll(account.carWash) }
+        val updateSuccess = accCollection.updateCarWash(model.userId, list)
+        if (!updateSuccess) return null
 
         val result = carWashCollection.insertOne(remoteData)
         if (result.wasAcknowledged()) {

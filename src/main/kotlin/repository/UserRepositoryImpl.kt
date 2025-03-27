@@ -3,17 +3,22 @@ package kg.automoika.repository
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import kg.automoika.data.body.ReviewBody
-import kg.automoika.data.body.UserBody
-import kg.automoika.data.body.UserGoogleBody
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
+import kg.automoika.data.body.*
+import kg.automoika.data.remote.AccountRemote
 import kg.automoika.data.remote.ReviewRemote
 import kg.automoika.data.remote.ReviewSenderModel
 import kg.automoika.data.remote.UserRemote
+import kg.automoika.data.response.ErrorResponse
+import kg.automoika.data.response.LoginResponse
 import kg.automoika.data.response.ReviewResponse
 import kg.automoika.data.response.UserResponse
 import kg.automoika.extensions.ACCOUNTS_COLLECTION
 import kg.automoika.extensions.REVIEW_COLLECTION
 import kg.automoika.extensions.USERS_COLLECTION
+import kg.automoika.utils.findUserByLogin
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 
@@ -26,6 +31,17 @@ class UserRepositoryImpl(private val database: MongoDatabase) : UserRepository {
         val remote = body.createRemote()
         val result = usersCollection.insertOne(remote)
         return if (result.wasAcknowledged()) remote.toResponse() else null
+    }
+
+    override suspend fun loginUser(body: LoginBody, call: ApplicationCall): UserResponse? {
+        val user = usersCollection.findUserByLogin(body.login).firstOrNull()
+        if (user == null) {
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("User not found"))
+            return null
+        } else if (user.password.value != body.password){
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Password is not valid"))
+            return null
+        } else return user.toResponse()
     }
 
     override suspend fun sendReview(body: ReviewBody): ReviewSenderModel? {

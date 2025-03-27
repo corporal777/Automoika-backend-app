@@ -2,7 +2,6 @@ package kg.automoika.repository
 
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kg.automoika.data.remote.CarWashRemote
-import kg.automoika.data.remote.UserRemote
 import kg.automoika.data.response.CarWashShortResponse
 import kg.automoika.db.CarWashDatabase
 import kg.automoika.extensions.ACCOUNTS_COLLECTION
