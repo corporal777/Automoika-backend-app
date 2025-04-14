@@ -6,6 +6,8 @@ import kg.automoika.data.remote.CarWashBoxesModel
 import kg.automoika.data.remote.CarWashRemote
 import kg.automoika.data.response.CarWashShortLocationModel
 import kg.automoika.data.response.CarWashShortResponse
+import kg.automoika.db.CarWashTable.carWashTableToResponse
+import kg.automoika.db.CarWashTable.freeBoxes
 import kg.automoika.extensions.suspendTransaction
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.*
@@ -21,6 +23,10 @@ object CarWashDatabase {
         CarWashTable.update({ CarWashTable.id eq model.id.toInt() }) {
             it[freeBoxes] = model.freeBoxes
         } > 0
+    }
+
+    suspend fun deleteAll() = suspendTransaction {
+        CarWashTable.deleteAll()
     }
 
     suspend fun addCarWashPoint(model: CarWashRemote) = suspendTransaction {
@@ -46,7 +52,7 @@ object CarWashDatabase {
     }
 
     suspend fun addCarWashPoints(list: List<CarWashRemote>) = suspendTransaction {
-        CarWashTable.batchInsert(list) {
+        CarWashTable.batchInsert(list, true) {
             this[CarWashTable.id] = it.id.toInt()
             this[CarWashTable.name] = it.name
             this[CarWashTable.date] = it.createdAt
@@ -64,63 +70,50 @@ object CarWashDatabase {
             this[CarWashTable.favourites] = it.favourites
             this[CarWashTable.type] = it.type
             this[CarWashTable.owner] = it.owner
-        }.map { resultRowToCarWashResponse(it) }
+        }.map { carWashTableToResponse(it) }
     }
 
 
     suspend fun getCarWashById(id : String) = suspendTransaction {
         val local = CarWashTable.select { CarWashTable.id eq id.toInt() }.firstOrNull()
-        if (local == null) null else resultRowToCarWashResponse(local)
+        if (local == null) null else carWashTableToResponse(local)
     }
 
 
     suspend fun getCarWashListLocal() = suspendTransaction {
-        try {
-            CarWashTable.selectAll().map { resultRowToCarWashResponse(it) }
-        } catch (e: Exception) {
-            emptyList()
-        }
+        CarWashTable.selectAll().map { carWashTableToResponse(it) }
     }
+
+
+
 
     suspend fun searchCarWashData(params : Parameters) = suspendTransaction {
         val search = params["search"]
         val boxes = params["boxes"]
+        val district = params["district"]
+        val type = params["type"]
         val limit = params["limit"]?.toInt() ?: 30
         val offset = params["offset"]?.toLong() ?: 0
 
         val filters = arrayListOf<Op<Boolean>>().apply {
             if (!search.isNullOrEmpty()){
-                add(CarWashTable.name eq search or (CarWashTable.street like "%${search}%"))
+                val regex = "%${search}%"
+                add(CarWashTable.name like regex or (CarWashTable.street like regex))
             }
             if (boxes.toBoolean()){
                 add(CarWashTable.freeBoxes neq "0")
+            }
+            if (!district.isNullOrEmpty()){
+                add(CarWashTable.district eq district)
+            }
+            if (!type.isNullOrEmpty()){
+                add(CarWashTable.type eq type)
             }
         }
 
         CarWashTable.select {
             if (filters.isEmpty()) CarWashTable.id neq -1
             else filters.compoundAnd()
-        }.limit(limit, offset).map { resultRowToCarWashResponse(it) }
-    }
-
-
-
-    private fun resultRowToCarWashResponse(row: ResultRow): CarWashShortResponse {
-        return CarWashShortResponse(
-            id = row[CarWashTable.id].toString(),
-            name = row[CarWashTable.name],
-            backgroundImage = row[CarWashTable.image],
-            address = CarWashShortLocationModel(
-                street = row[CarWashTable.street],
-                city = row[CarWashTable.city],
-                lat = row[CarWashTable.lat],
-                lon = row[CarWashTable.lon],
-                district = row[CarWashTable.district]
-            ),
-            boxes = CarWashBoxesModel(row[CarWashTable.boxesCount], row[CarWashTable.freeBoxes]),
-            favourites = row[CarWashTable.favourites],
-            owner = row[CarWashTable.owner],
-            type = row[CarWashTable.type],
-        )
+        }.limit(limit, offset).map { carWashTableToResponse(it) }
     }
 }

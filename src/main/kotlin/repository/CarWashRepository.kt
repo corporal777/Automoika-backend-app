@@ -12,6 +12,7 @@ interface CarWashRepository {
     suspend fun createCarWashPoint(model : CarWashBody, imagesList: List<CarWashImageModel>) : CarWashRemote?
     suspend fun getCarWashList(params : Parameters) : List<CarWashShortResponse>
     suspend fun getCarWashById(id : String, params : Parameters) : CarWashFullResponse?
+    suspend fun getCarWashUser(id : String) : CarWashFullResponse?
 
     suspend fun updateBoxes(model: CarWashFreeBoxesBody) : Boolean
 

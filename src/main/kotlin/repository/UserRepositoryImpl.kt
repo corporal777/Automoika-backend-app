@@ -18,6 +18,7 @@ import kg.automoika.data.response.UserResponse
 import kg.automoika.extensions.ACCOUNTS_COLLECTION
 import kg.automoika.extensions.REVIEW_COLLECTION
 import kg.automoika.extensions.USERS_COLLECTION
+import kg.automoika.utils.findUserById
 import kg.automoika.utils.findUserByLogin
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
@@ -27,6 +28,12 @@ class UserRepositoryImpl(private val database: MongoDatabase) : UserRepository {
     private val usersCollection get() = database.getCollection<UserRemote>(USERS_COLLECTION)
     private val reviewCollection get() = database.getCollection<ReviewRemote>(REVIEW_COLLECTION)
 
+    override suspend fun getUserById(id : String?): UserResponse? {
+        val remote = usersCollection.findUserById(id ?: "-1").firstOrNull()
+        return remote?.toResponse()
+    }
+
+
     override suspend fun createUser(body: UserBody): UserResponse? {
         val remote = body.createRemote()
         val result = usersCollection.insertOne(remote)
@@ -34,14 +41,14 @@ class UserRepositoryImpl(private val database: MongoDatabase) : UserRepository {
     }
 
     override suspend fun loginUser(body: LoginBody, call: ApplicationCall): UserResponse? {
-        val user = usersCollection.findUserByLogin(body.login).firstOrNull()
-        if (user == null) {
+        val remote = usersCollection.findUserByLogin(body.login).firstOrNull()
+        if (remote == null) {
             call.respond(HttpStatusCode.NotFound, ErrorResponse("User not found"))
             return null
-        } else if (user.password.value != body.password){
+        } else if (remote.password.value != body.password){
             call.respond(HttpStatusCode.NotFound, ErrorResponse("Password is not valid"))
             return null
-        } else return user.toResponse()
+        } else return remote.toResponse()
     }
 
     override suspend fun sendReview(body: ReviewBody): ReviewSenderModel? {

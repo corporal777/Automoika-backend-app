@@ -7,6 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.util.*
 import kg.automoika.di.AppData
 import kg.automoika.data.body.CarWashBody
 import kg.automoika.data.body.CarWashBody.Companion.setBackgroundImage
@@ -27,11 +28,20 @@ fun Route.carWashRoutes() {
     val auth by inject<AuthRepository>()
     val appData by inject<AppData>()
 
+    get("v1/car-wash-user/{id}") {
+        if (!auth.checkAuth(call)) return@get
+
+        val id = call.parameters.getOrFail("id")
+        val response = repository.getCarWashUser(id)
+        if (response != null) call.respond(response)
+        else call.respond(HttpStatusCode.NotFound)
+    }
+
     get("v1/car-wash-detail/{id}") {
         if (!auth.checkAuth(call)) return@get
 
         val params = call.request.queryParameters
-        val id = call.parameters["id"] ?: return@get call.respond(HttpStatusCode.BadRequest)
+        val id = call.parameters.getOrFail("id")
         val response = repository.getCarWashById(id, params)
         if (response != null) call.respond(response)
         else call.respond(HttpStatusCode.NotFound)

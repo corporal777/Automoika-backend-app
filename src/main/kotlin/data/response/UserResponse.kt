@@ -9,5 +9,6 @@ data class UserResponse(
     val name: String,
     val createdAt : String,
     val image: CarWashImageModel,
+    val passwordAbsent : Boolean,
     val login : UserLoginModel,
 )

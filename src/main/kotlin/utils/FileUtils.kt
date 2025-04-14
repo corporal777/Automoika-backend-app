@@ -13,7 +13,6 @@ import java.io.File
 
 object FileUtils {
 
-    //private val fbBucketName = "tam-tam-8b2a7.appspot.com"
     private val fbBucketName = "automoika-kg-android.firebasestorage.app"
 
     fun deleteLocalFile(path: String){

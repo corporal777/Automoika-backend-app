@@ -19,6 +19,7 @@ const val CAR_WASH_COLLECTION = "car-wash"
 const val ACCOUNTS_COLLECTION = "accounts"
 const val USERS_COLLECTION = "users"
 const val REVIEW_COLLECTION = "car-wash-reviews"
+const val STORIES_COLLECTION = "stories"
 
 const val TYPE_USER = "user"
 const val TYPE_CAR_WASH_OWNER = "car-wash-owner"

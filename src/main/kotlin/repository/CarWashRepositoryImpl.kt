@@ -43,6 +43,15 @@ class CarWashRepositoryImpl(private val database: MongoDatabase, private val loc
         return localDatabase.updateCarWashBoxes(model)
     }
 
+    override suspend fun getCarWashUser(id: String): CarWashFullResponse? {
+        val remote = carWashCollection.findCWByUser(id).firstOrNull() ?: return null
+        val local = localDatabase.getCarWashById(id)
+        if (local?.boxes != null) remote.boxes = local.boxes
+
+        val response = CarWashFullResponse.fromRemote(remote)
+        return response
+    }
+
     override suspend fun getCarWashById(id: String, params: Parameters): CarWashFullResponse? {
         val remote = carWashCollection.findCWById(id).firstOrNull() ?: return null
         val local = localDatabase.getCarWashById(id)

@@ -12,6 +12,7 @@ val repositoryModule = module {
     single<UserRepository> { UserRepositoryImpl(get()) }
     single<AccountRepository> { AccountRepositoryImpl(get()) }
     single<CommonRepository> { CommonRepositoryImpl(get(), get()) }
+    single<StoriesRepository> { StoriesRepositoryImpl(get()) }
 }
 
 val dataBaseModule = module {

@@ -45,6 +45,7 @@ data class CarWashBody(
                 "whatsapp" -> whatsapp = partData.value
                 "instagram" -> instagram = partData.value
 
+                //cleaner-service or own-wash
                 "type" -> type = partData.value
 
                 "user" -> userId = partData.value

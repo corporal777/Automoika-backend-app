@@ -20,7 +20,7 @@ data class UserRemote(
     val password : UserPasswordModel,
     val state : UserStateModel
 ) {
-    fun toResponse() : UserResponse = UserResponse(id, name, createdAt, image, login)
+    fun toResponse() : UserResponse = UserResponse(id, name, createdAt, image, password.isAbsent, login)
 }
 
 @Serializable

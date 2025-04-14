@@ -80,4 +80,6 @@ dependencies {
 
     //Firebase
     implementation("com.google.firebase:firebase-admin:7.1.0")
+
+    implementation("com.twilio.sdk:twilio:10.7.1")
 }

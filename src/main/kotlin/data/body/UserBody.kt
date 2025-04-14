@@ -38,7 +38,6 @@ data class UserBody(
             image = CarWashImageModel("",""),
             login = login,
             password = password,
-            account = UserAccountModel(TYPE_USER, emptyList()),
             state = UserStateModel("", false)
         )
     }

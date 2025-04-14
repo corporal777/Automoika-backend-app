@@ -11,6 +11,7 @@ interface UserRepository {
 
     suspend fun loginUser(body : LoginBody, call: ApplicationCall) : UserResponse?
     suspend fun createUser(body : UserBody) : UserResponse?
+    suspend fun getUserById(id : String?) : UserResponse?
     suspend fun sendReview(body : ReviewBody) : ReviewSenderModel?
     suspend fun getCarWashReviews(id : String?) : List<ReviewResponse>
 }

@@ -20,4 +20,14 @@ fun Route.databaseRoutes() {
         val data = repository.checkData()
         call.respond(data)
     }
+
+    post("v1/delete-all-local") {
+        val data = repository.deleteAllLocal()
+        call.respond(HttpStatusCode.OK, data)
+    }
+
+    post("v1/send-message") {
+        val data = repository.sendMessage()
+        call.respond(HttpStatusCode.OK, data)
+    }
 }

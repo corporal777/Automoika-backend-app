@@ -22,6 +22,10 @@ fun MongoCollection<CarWashRemote>.findCWById(id : String): FindFlow<CarWashRemo
     return find(Filters.eq("_id", id))
 }
 
+fun MongoCollection<CarWashRemote>.findCWByUser(id : String): FindFlow<CarWashRemote> {
+    return find(Filters.eq("owner", id))
+}
+
 fun MongoCollection<AccountRemote>.findAccById(id : String): FindFlow<AccountRemote> {
     return find(Filters.eq("_id", id))
 }

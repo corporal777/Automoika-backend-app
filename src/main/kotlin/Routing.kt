@@ -41,6 +41,7 @@ fun Application.configureRouting() {
         socketRoutes()
         userRoutes()
         accountRoutes()
+        storiesRoutes()
         configureStaticFolders()
     }
 }
@@ -71,8 +72,8 @@ fun Application.configureDatabases() {
 fun Application.configureFirebase() {
     val config = environment.config
 
-    //val file = FileInputStream(config.property("firebase.adminSdkFilePath").getString())
-    val file = FileInputStream(config.property("firebase.serverAdminSdkFilePath").getString())
+    val file = FileInputStream(config.property("firebase.adminSdkFilePath").getString())
+    //val file = FileInputStream(config.property("firebase.serverAdminSdkFilePath").getString())
 
     val options = FirebaseOptions.Builder()
         .setCredentials(GoogleCredentials.fromStream(file))

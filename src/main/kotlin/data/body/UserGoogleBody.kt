@@ -18,7 +18,6 @@ data class UserGoogleBody(
             image = CarWashImageModel("",""),
             login = UserLoginModel("-", false),
             password = UserPasswordModel("-", true),
-            account = UserAccountModel(TYPE_USER, listOf("")),
             state = UserStateModel("", false)
         )
     }
