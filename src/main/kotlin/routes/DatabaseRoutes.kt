@@ -26,8 +26,8 @@ fun Route.databaseRoutes() {
         call.respond(HttpStatusCode.OK, data)
     }
 
-    post("v1/send-message") {
-        val data = repository.sendMessage()
-        call.respond(HttpStatusCode.OK, data)
-    }
+//    post("v1/send-message") {
+//        val data = repository.sendMessage()
+//        call.respond(HttpStatusCode.OK, data)
+//    }
 }

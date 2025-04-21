@@ -14,6 +14,11 @@ data class TokenBody(
 )
 
 @Serializable
+data class PhoneCheckBody(
+    val phone : String
+)
+
+@Serializable
 data class PhoneBody(
     val phone : String,
     val fcmToken : String

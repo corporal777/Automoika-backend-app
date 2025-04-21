@@ -11,7 +11,7 @@ val h2_version: String by project
 
 plugins {
     kotlin("jvm") version "2.1.10"
-    id("io.ktor.plugin") version "2.3.7"
+    id("io.ktor.plugin") version "3.0.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
@@ -27,16 +27,16 @@ application {
 }
 
 repositories {
+    maven(url = "https://jitpack.io")
     mavenCentral()
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_18)
-    }
-}
-
 tasks {
+    withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_18)
+        }
+    }
     shadowJar {
         manifest {
             attributes(Pair("Main-Class", "kg.automoika.ApplicationKt"))
@@ -49,14 +49,18 @@ tasks {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("io.ktor:ktor-server-core-jvm")
-    implementation("io.ktor:ktor-server-swagger-jvm")
     implementation("io.ktor:ktor-server-content-negotiation-jvm")
     implementation("io.ktor:ktor-serialization-gson-jvm")
-    implementation("io.ktor:ktor-server-tomcat-jvm")
+    implementation("io.ktor:ktor-server-tomcat-jakarta-jvm")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-server-websockets:$ktor_version")
     implementation("io.ktor:ktor-network:$ktor_version")
 
+    //implementation("io.ktor:ktor-server-swagger-jvm")
+    //implementation("io.ktor:ktor-server-openapi:$ktor_version")
+    //implementation("io.swagger.codegen.v3:swagger-codegen-generators:1.0.47")
+    implementation("io.github.smiley4:ktor-openapi:5.0.0")
+    implementation("io.github.smiley4:ktor-swagger-ui:5.0.0")
 
     //ktor client
     implementation("io.ktor:ktor-client-core:$ktor_version")

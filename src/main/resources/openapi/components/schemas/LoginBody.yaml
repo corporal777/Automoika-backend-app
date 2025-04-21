@@ -1,0 +1,7 @@
+allOf:
+  type: "object"
+  properties:
+    phone:
+      type: "string"
+    isConfirmed:
+      type: "boolean"

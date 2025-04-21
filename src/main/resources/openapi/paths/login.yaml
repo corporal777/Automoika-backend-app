@@ -1,0 +1,10 @@
+components:
+  securitySchemes:
+    MySecurity:
+      type: http
+      scheme: basic
+  pathItems:
+    Foo:
+      get:
+        security:
+          - MySecurity: []

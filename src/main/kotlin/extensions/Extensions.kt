@@ -1,5 +1,8 @@
 package kg.automoika.extensions
 
+import io.github.smiley4.ktoropenapi.config.ResponseConfig
+import io.github.smiley4.ktoropenapi.config.ResponsesConfig
+import io.github.smiley4.ktoropenapi.config.RouteConfig
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -9,6 +12,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.routing.*
+import kg.automoika.data.response.TokenResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -64,7 +68,7 @@ suspend fun HttpClient.submitFormWithBinaryData(url: String, bytes: ByteArray, n
     )
 }
 
-fun String.hasText(text : String): Boolean {
+fun String.hasText(text: String): Boolean {
     return contains(text, true)
 }
 
@@ -76,7 +80,10 @@ fun daysBetween(dateOne: Long, dateTwo: Long): Int {
 
 fun distanceInKm(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
     val theta = lon1 - lon2
-    var dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta))
+    var dist =
+        Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(
+            deg2rad(theta)
+        )
     dist = Math.acos(dist)
     dist = rad2deg(dist)
     dist *= 60 * 1.1515
@@ -95,3 +102,34 @@ private fun rad2deg(rad: Double): Double {
 suspend fun <T> suspendTransaction(block: suspend () -> T): T {
     return newSuspendedTransaction(Dispatchers.IO) { block() }
 }
+
+inline fun <reified T> RouteConfig.successResponse(code: HttpStatusCode) {
+    response {
+        code to {
+            description = "A success response"
+            body<T>()
+        }
+    }
+}
+
+inline fun <reified T> RouteConfig.errorResponse(code: HttpStatusCode) {
+    response {
+        code to {
+            description = "A success response"
+            body<T>()
+        }
+    }
+}
+
+inline fun <reified T> ResponsesConfig.body(code: HttpStatusCode) {
+    code to {
+        description = "A success response"
+        body<T>()
+    }
+}
+
+var RouteConfig.tag: String
+    get() = tags.first()
+    set(value) {
+        tags(value)
+    }

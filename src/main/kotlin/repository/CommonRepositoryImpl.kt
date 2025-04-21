@@ -37,18 +37,18 @@ class CommonRepositoryImpl(private val remoteDb: MongoDatabase, private val loca
         return "Deleted data count: " + localDb.deleteAll().toString()
     }
 
-    override suspend fun sendMessage(): String {
-        val ACCOUNT_SID = "AC4c022fa5c2bf75356d53b73bc21ab5fa";
-        val AUTH_TOKEN = "8e76a920d0e573e6b63a5e4203dfc359";
-
-        Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
-        val message = Message.creator(
-            PhoneNumber("whatsapp:+79267806176"),
-            PhoneNumber("whatsapp:+14155238886"),
-            "This is the ship that made the Kessel Run in fourteen parsecs?"
-        ).create();
-
-        println(message.getSid());
-        return message.getSid()
-    }
+//    override suspend fun sendMessage(): String {
+//        val ACCOUNT_SID = "-";
+//        val AUTH_TOKEN = "-";
+//
+//        Twilio.init(ACCOUNT_SID, AUTH_TOKEN)
+//        val message = Message.creator(
+//            PhoneNumber("whatsapp:+79267806176"),
+//            PhoneNumber("whatsapp:+14155238886"),
+//            "This is the ship that made the Kessel Run in fourteen parsecs?"
+//        ).create();
+//
+//        println(message.getSid());
+//        return message.getSid()
+//    }
 }

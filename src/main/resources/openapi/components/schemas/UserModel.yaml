@@ -1,0 +1,34 @@
+type: "object"
+properties:
+  id:
+    type: "string"
+  name:
+    type: "string"
+  createdAt:
+    type: "string"
+  image:
+    allOf:
+      - $ref: "#/components/schemas/ImageModel"
+  passwordAbsent:
+    type: "boolean"
+  login:
+    allOf:
+      - $ref: "#/components/schemas/LoginModel"
+components:
+  schemas:
+
+    ImageModel:
+      type: "object"
+      properties:
+        imageName:
+          type: "string"
+        imageUrl:
+          type: "string"
+
+    LoginModel:
+      type: "object"
+      properties:
+        phone:
+          type: "string"
+        isConfirmed:
+          type: "boolean"
